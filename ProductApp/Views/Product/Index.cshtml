@@ -1,0 +1,36 @@
+﻿@model AuthViewModel
+@{
+    ViewData["Title"] = "Index";
+    bool isAuthenticated = ViewBag.IsAuthenticated != null ? (bool)ViewBag.IsAuthenticated : false;
+}
+
+<style>
+    .card{
+        min-height: 400px;
+    }
+
+</style>
+
+
+<div class="card text-center align-items-center justify-content-center m-auto">
+    <div>
+        <h2>Welcome to prodcut app!</h2>
+            @if (!isAuthenticated)
+            {
+                <h5>Authenticate yourself first!</h5>
+            }
+    </div>
+    <hr />
+    <br />
+    <div>
+        @if (!isAuthenticated)
+        {
+            <form asp-action="Index" method="post">
+                <input asp-for="ButtonPressed" hidden="hidden" type="ButtonPressed" value="true" />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Authenticate</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>

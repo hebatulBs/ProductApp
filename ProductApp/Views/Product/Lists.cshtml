@@ -1,0 +1,97 @@
+﻿@model PagedList<ProductApp.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+    int pageSize = ViewBag.PageSize != null ? (int)ViewBag.PageSize : 10;
+    int count = 1;
+}
+
+<h2>Products</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> @Model.ErrorMessage
+                </div>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>TenantId</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Availability</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            string isAvailable = "Not Available";
+                            if (item.IsAvailable) isAvailable = "Available";
+                            <tr>
+                                <th>@count</th>
+                                <td>@item.TenantId</td>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td>@isAvailable</td>
+                                <td><a class="btn btn-primary" href="@Url.Action("Edit", new { id = item.Id })">Edit</a></td>
+                            </tr>
+                            count++;
+                        }
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <nav class="col-md-10">
+                        <ul class="pagination">
+                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Lists" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Lists" asp-route-pageNumber="@i" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Lists" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-pageSize="@ViewBag.PageSize">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="col-md-2">
+                        <div class="col-md-12 row flex-nowrap">
+                            <label for="pageSize" class="form-label d-lg-inline-flex align-items-center col-md-6 mb-0">Page</label>
+                            <select id="pageSize" class="form-select col-md-6" onchange="changePageSize()">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var pageSize = '@ViewBag.PageSize';
+            $('#pageSize').val(pageSize);
+        });
+        function changePageSize() {
+            var pageSize = document.getElementById("pageSize").value;
+            window.location.href = '@Url.Action("Lists", "Product")' + '?pageSize=' + pageSize + '&pageNumber=1';
+        }
+    </script>
+}
